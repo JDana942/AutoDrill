@@ -1,4 +1,4 @@
-//Version 01.02
+//Version 01.03
 #include <Keypad.h>
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
@@ -6,6 +6,8 @@
 int DIRPin = 12;
 int STEPPin = 11;
 int bitPin = 9;
+int DRILL_POWER = 100; 
+float DEPTH_CALIBRATION = 2.5;
 int i, cutSpeed, stepDelay, stepNum, usr, cutTemp, DIR, resumeCut;
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 const byte ROWS = 4; 
@@ -76,7 +78,7 @@ void autocontrol(){
     if (customKey == 'E'){
       _step(1,10,resumeCut);
       delay(10*resumeCut);
-      analogWrite(bitPin, 30);
+      analogWrite(bitPin, DRILL_POWER);
       delay(500);
       _step(1,(100/cutSpeed),cutDepth);
       delay((10*cutDepth)/cutSpeed);
@@ -84,7 +86,6 @@ void autocontrol(){
       delay(10*cutDepth);
       digitalWrite(bitPin, 0);
       resumeCut = 50;
-        
     }
     else if (customKey == 'X'){
       lcd.clear();
@@ -111,7 +112,7 @@ void manualControl(){
   while(true){
     customKey = customKeypad.getKey();
     if (customKey == 'E'){
-      analogWrite(bitPin, 30);
+      analogWrite(bitPin, DRILL_POWER);
       cutSpeed = 1;
       lcd.clear();
       lcd.setCursor(0,0);
@@ -275,7 +276,7 @@ int setcutDepth(){
     }
     else{}
   }
-  cutDepth = cutDepth/5;
+  cutDepth = cutDepth * DEPTH_CALIBRATION;
   return cutDepth;
 }
 
